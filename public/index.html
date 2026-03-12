@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JRAYNIUM</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+  <!-- Side Navigation -->
+  <div class="nav-overlay" id="navOverlay"></div>
+  <nav class="sidenav" id="sidenav" aria-hidden="true">
+    <button class="sidenav-close" id="navClose" aria-label="Close menu">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+    <div class="sidenav-logo">JRAYNIUM</div>
+    <ul class="sidenav-links">
+      <li><a href="#social" class="nav-link">Socials</a></li>
+      <li><a href="#music" class="nav-link">Music</a></li>
+      <li><a href="#downloads" class="nav-link">Downloads</a></li>
+      <li><a href="#contact" class="nav-link">Contact</a></li>
+    </ul>
+    <!-- <div class="sidenav-footer">
+      <a href="#social" class="nav-link"><i class="fa-brands fa-instagram"></i></a>
+      <a href="#social" class="nav-link"><i class="fa-brands fa-x-twitter"></i></a>
+      <a href="#social" class="nav-link"><i class="fa-brands fa-spotify"></i></a>
+    </div> -->
+  </nav>
+
+  <!-- Hamburger Button -->
+  <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <!-- Banner -->
+  <header class="banner" id="top">
+    <div class="banner-bg"></div>
+    <div class="banner-content">
+      <h1 class="artist-name">JRAYNIUM</h1>
+      <!-- <p class="artist-tagline">Music / Downloads / Contact</p> -->
+      <!-- <a href="#social" class="banner-cta">Explore</a> -->
+    </div>
+    <div class="banner-scroll-hint">
+      <i class="fa-solid fa-chevron-down"></i>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ==================== SOCIAL SECTION ==================== -->
+    <section id="socials" class="section">
+      <div class="section-inner">
+        <h2 class="section-title">Find me here</h2>
+        <!-- <p class="section-subtitle">Find JRAYNIUM on all platforms</p> -->
+        <div class="social-grid">
+
+          <a href="https://www.instagram.com/jraynium" class="social-card" target="_blank" rel="noopener noreferrer">
+            <div class="social-icon"><i class="fa-brands fa-instagram"></i></div>
+            <div class="social-info">
+              <span class="social-name">Instagram</span>
+              <span class="social-handle">@jraynium</span>
+            </div>
+            <i class="fa-solid fa-arrow-up-right-from-square social-arrow"></i>
+          </a>
+
+          <!-- <a href="#" class="social-card" target="_blank" rel="noopener noreferrer">
+            <div class="social-icon"><i class="fa-brands fa-x-twitter"></i></div>
+            <div class="social-info">
+              <span class="social-name">X / Twitter</span>
+              <span class="social-handle">@jraynium</span>
+            </div>
+            <i class="fa-solid fa-arrow-up-right-from-square social-arrow"></i>
+          </a> -->
+
+          <a href="https://open.spotify.com/artist/47VdhqtVDvoHmyTOazuKIb" class="social-card" target="_blank" rel="noopener noreferrer">
+            <div class="social-icon"><i class="fa-brands fa-spotify"></i></div>
+            <div class="social-info">
+              <span class="social-name">Spotify</span>
+              <span class="social-handle">JRAYNIUM</span>
+            </div>
+            <i class="fa-solid fa-arrow-up-right-from-square social-arrow"></i>
+          </a>
+
+          <a href="https://soundcloud.com/jraynium" class="social-card" target="_blank" rel="noopener noreferrer">
+            <div class="social-icon"><i class="fa-brands fa-soundcloud"></i></div>
+            <div class="social-info">
+              <span class="social-name">SoundCloud</span>
+              <span class="social-handle">jraynium</span>
+            </div>
+            <i class="fa-solid fa-arrow-up-right-from-square social-arrow"></i>
+          </a>
+
+          <a href="https://www.tiktok.com/@jraynium" class="social-card" target="_blank" rel="noopener noreferrer">
+            <div class="social-icon"><i class="fa-brands fa-tiktok"></i></div>
+            <div class="social-info">
+              <span class="social-name">TikTok</span>
+              <span class="social-handle">@jraynium</span>
+            </div>
+            <i class="fa-solid fa-arrow-up-right-from-square social-arrow"></i>
+          </a>
+
+          <a href="https://www.youtube.com/@jraynium" class="social-card" target="_blank" rel="noopener noreferrer">
+            <div class="social-icon"><i class="fa-brands fa-youtube"></i></div>
+            <div class="social-info">
+              <span class="social-name">YouTube</span>
+              <span class="social-handle">@jraynium</span>
+            </div>
+            <i class="fa-solid fa-arrow-up-right-from-square social-arrow"></i>
+          </a>
+
+          <a href="https://music.apple.com/us/artist/jraynium/1808339252" class="social-card" target="_blank" rel="noopener noreferrer">
+            <div class="social-icon"><i class="fa-brands fa-itunes-note"></i></div>
+            <div class="social-info">
+              <span class="social-name">Apple Music</span>
+              <span class="social-handle">@jraynium</span>
+            </div>
+            <i class="fa-solid fa-arrow-up-right-from-square social-arrow"></i>
+          </a>
+
+          <a href="https://www.deezer.com/us/artist/317944831" class="social-card" target="_blank" rel="noopener noreferrer">
+            <div class="social-icon"><i class="fa-brands fa-deezer"></i></div>
+            <div class="social-info">
+              <span class="social-name">Deezer</span>
+              <span class="social-handle">@jraynium</span>
+            </div>
+            <i class="fa-solid fa-arrow-up-right-from-square social-arrow"></i>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== MUSIC SECTION ==================== -->
+    <section id="music" class="section section-alt">
+      <div class="section-inner">
+        <h2 class="section-title">Music</h2>
+        <p class="section-subtitle">Download or stream a 320 kbps .mp3 of all of my music</p>
+
+        <!-- Music Player -->
+        <div class="player-container">
+          <div class="player-header">
+            <span class="player-label">Player</span>
+          </div>
+
+          <!-- Track List -->
+          <div class="tracklist" id="tracklist">
+            <!-- Populated by JS -->
+          </div>
+
+          <!-- Player Controls -->
+          <div class="player-controls">
+            <div class="player-now-playing">
+              <div class="now-playing-art" id="nowPlayingArt">
+                <span class="now-playing-art-placeholder"><i class="fa-solid fa-music"></i></span>
+                <img id="nowPlayingImg" src="" alt="" hidden />
+              </div>
+              <div class="now-playing-info">
+                <span class="now-playing-title" id="nowPlayingTitle">Select a track</span>
+                <span class="now-playing-artist">JRAYNIUM</span>
+              </div>
+            </div>
+
+            <div class="player-seek">
+              <span class="player-time" id="currentTime">0:00</span>
+              <div class="seek-bar-wrapper" id="seekBarWrapper">
+                <div class="seek-bar-bg"></div>
+                <div class="seek-bar-fill" id="seekFill"></div>
+                <div class="seek-bar-thumb" id="seekThumb"></div>
+              </div>
+              <span class="player-time" id="totalTime">0:00</span>
+            </div>
+
+            <div class="player-buttons">
+              <div></div>
+              <div class="player-buttons-center">
+                <button class="player-btn" id="prevBtn" aria-label="Previous track">
+                  <i class="fa-solid fa-backward-step"></i>
+                </button>
+                <button class="player-btn player-btn-main" id="playPauseBtn" aria-label="Play">
+                  <i class="fa-solid fa-play" id="playIcon"></i>
+                </button>
+                <button class="player-btn" id="nextBtn" aria-label="Next track">
+                  <i class="fa-solid fa-forward-step"></i>
+                </button>
+              </div>
+              <div class="player-volume">
+                <i class="fa-solid fa-volume-high" id="volIcon"></i>
+                <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.01" value="0.8" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Streaming Embeds -->
+        <div class="embeds-grid">
+
+          <div class="embed-block">
+            <h3 class="embed-title"><i class="fa-brands fa-spotify"></i> Spotify</h3>
+            <iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/artist/47VdhqtVDvoHmyTOazuKIb?utm_source=generator&theme=0" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+          </div>
+
+          <div class="embed-block">
+            <h3 class="embed-title"><i class="fa-brands fa-soundcloud"></i> SoundCloud</h3>
+            <iframe width="100%" height="300" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/soundcloud%253Aplaylists%253A2004576732&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true"></iframe><div style="font-size: 10px; color: #cccccc;line-break: anywhere;word-break: normal;overflow: hidden;white-space: nowrap;text-overflow: ellipsis; font-family: Interstate,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Garuda,Verdana,Tahoma,sans-serif;font-weight: 100;"><a href="https://soundcloud.com/jraynium" title="Jraynium" target="_blank" style="color: #cccccc; text-decoration: none;">Jraynium</a> · <a href="https://soundcloud.com/jraynium/sets/reignite-ep" title="Reignite EP" target="_blank" style="color: #cccccc; text-decoration: none;">Reignite EP</a></div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== DOWNLOADS SECTION ==================== -->
+    <section id="downloads" class="section">
+      <div class="section-inner">
+        <h2 class="section-title">Downloads</h2>
+        <p class="section-subtitle">I use this to easily share files with people</p>
+        <div class="downloads-grid" id="downloadsGrid">
+          <!-- Populated by JS -->
+        </div>
+        <p class="downloads-empty" id="downloadsEmpty" hidden>No files available yet. Check back soon.</p>
+      </div>
+    </section>
+
+    <!-- ==================== CONTACT SECTION ==================== -->
+    <section id="contact" class="section">
+      <div class="section-inner">
+        <h2 class="section-title">Contact</h2>
+        <p class="section-subtitle">Collabs, .wav files, bookings, or just saying hi</p>
+        <p class="section-subtitle">Shoot me an email at jrayniumtunes@gmail.com or use this contact form:</p>
+      </div>
+      <div class="section-inner section-inner-narrow">
+        <form class="contact-form" id="contactForm" novalidate>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="name">Name</label>
+              <input type="text" id="name" name="name" placeholder="Your name" autocomplete="name" required />
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" placeholder="your@email.com" autocomplete="email" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" placeholder="What's on your mind?" rows="6" required></textarea>
+          </div>
+          <div class="form-status" id="formStatus" aria-live="polite"></div>
+          <button type="submit" class="submit-btn" id="submitBtn">
+            <span id="submitText">Send Message</span>
+            <i class="fa-solid fa-paper-plane" id="submitIcon"></i>
+          </button>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <span class="footer-name">JRAYNIUM</span>
+      <span class="footer-copy">&copy; <span id="footerYear"></span> All rights reserved.</span>
+      <a href="#top" class="footer-top" aria-label="Back to top">
+        <i class="fa-solid fa-chevron-up"></i>
+      </a>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
+  <script src="/js/main.js"></script>
+</body>
+</html>

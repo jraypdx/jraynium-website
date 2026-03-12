@@ -1,0 +1,6 @@
+node_modules/
+.env
+contacts.json
+public/music/
+downloads/
+uploads/
