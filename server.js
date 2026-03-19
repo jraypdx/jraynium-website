@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+const https = require('https');
 const nodemailer = require('nodemailer');
 const rateLimit = require('express-rate-limit');
 const multer = require('multer');
@@ -101,12 +102,52 @@ app.get('/api/download/:filename', (req, res) => {
   res.download(filePath, filename);
 });
 
+function verifyRecaptcha(token) {
+  return new Promise((resolve, reject) => {
+    const secret = process.env.RECAPTCHA_SECRET_KEY;
+    const postData = `secret=${encodeURIComponent(secret)}&response=${encodeURIComponent(token)}`;
+    const options = {
+      hostname: 'www.google.com',
+      path: '/recaptcha/api/siteverify',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Length': Buffer.byteLength(postData),
+      },
+    };
+    const req = https.request(options, (res) => {
+      let body = '';
+      res.on('data', chunk => body += chunk);
+      res.on('end', () => {
+        try { resolve(JSON.parse(body)); }
+        catch { reject(new Error('Invalid response from reCAPTCHA')); }
+      });
+    });
+    req.on('error', reject);
+    req.write(postData);
+    req.end();
+  });
+}
+
 // Contact form
 app.post('/api/contact', contactLimiter, async (req, res) => {
-  const { name, email, message } = req.body;
+  const { name, email, message, recaptchaToken } = req.body;
 
   if (!name || !email || !message) {
     return res.status(400).json({ error: 'All fields are required.' });
+  }
+
+  if (!recaptchaToken) {
+    return res.status(400).json({ error: 'reCAPTCHA token missing.' });
+  }
+
+  try {
+    const captchaResult = await verifyRecaptcha(recaptchaToken);
+    if (!captchaResult.success) {
+      return res.status(400).json({ error: 'reCAPTCHA verification failed. Please try again.' });
+    }
+  } catch {
+    return res.status(500).json({ error: 'Could not verify reCAPTCHA. Please try again.' });
   }
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

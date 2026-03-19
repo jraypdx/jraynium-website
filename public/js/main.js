@@ -412,12 +412,19 @@ contactForm.addEventListener('submit', async (e) => {
   formStatus.textContent = '';
   formStatus.className = 'form-status';
 
-  const name    = contactForm.name.value.trim();
-  const email   = contactForm.email.value.trim();
-  const message = contactForm.message.value.trim();
+  const name           = contactForm.name.value.trim();
+  const email          = contactForm.email.value.trim();
+  const message        = contactForm.message.value.trim();
+  const recaptchaToken = grecaptcha.getResponse();
 
   if (!name || !email || !message) {
     formStatus.textContent = 'Please fill in all fields.';
+    formStatus.className = 'form-status error';
+    return;
+  }
+
+  if (!recaptchaToken) {
+    formStatus.textContent = 'Please complete the reCAPTCHA.';
     formStatus.className = 'form-status error';
     return;
   }
@@ -430,7 +437,7 @@ contactForm.addEventListener('submit', async (e) => {
     const res = await fetch('/api/contact', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, message }),
+      body: JSON.stringify({ name, email, message, recaptchaToken }),
     });
     const data = await res.json();
 
@@ -441,10 +448,12 @@ contactForm.addEventListener('submit', async (e) => {
     } else {
       formStatus.textContent = data.error || 'Something went wrong. Please try again.';
       formStatus.className = 'form-status error';
+      grecaptcha.reset();
     }
   } catch {
     formStatus.textContent = 'Network error. Please try again.';
     formStatus.className = 'form-status error';
+    grecaptcha.reset();
   } finally {
     submitBtn.disabled = false;
     submitText.textContent = 'Send Message';

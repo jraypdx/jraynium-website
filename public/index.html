@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <link rel="stylesheet" href="/css/style.css" />
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
 
@@ -251,6 +252,7 @@
             <label for="message">Message</label>
             <textarea id="message" name="message" placeholder="What's on your mind?" rows="6" required></textarea>
           </div>
+          <div class="g-recaptcha" data-sitekey="6Lc-UJAsAAAAABymD0YmXWKkuQVswzcOl0Iiwlxe"></div>
           <div class="form-status" id="formStatus" aria-live="polite"></div>
           <button type="submit" class="submit-btn" id="submitBtn">
             <span id="submitText">Send Message</span>
