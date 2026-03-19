@@ -8,6 +8,11 @@
 // ──────────────────────────────────────────────────────────────
 const songs = [
   {
+    title: 'Feel Your Love',
+    file: '/music/Jraynium - Feel Your Love.mp3',
+    cover: '/assets/covers/FYL_CoverArt_1024_lighterLogo.jpg', // e.g. '/assets/covers/love-u-anyway.jpg'
+  },
+  {
     title: 'Love U Anyway',
     file: '/music/Jraynium - Love U Anyway.mp3',
     cover: '/assets/covers/LoveUAnywayCover_SMALL.jpg', // e.g. '/assets/covers/love-u-anyway.jpg'
