@@ -407,15 +407,14 @@ const submitBtn   = document.getElementById('submitBtn');
 const submitText  = document.getElementById('submitText');
 const submitIcon  = document.getElementById('submitIcon');
 
-contactForm.addEventListener('submit', async (e) => {
+contactForm.addEventListener('submit', (e) => {
   e.preventDefault();
   formStatus.textContent = '';
   formStatus.className = 'form-status';
 
-  const name           = contactForm.name.value.trim();
-  const email          = contactForm.email.value.trim();
-  const message        = contactForm.message.value.trim();
-  const recaptchaToken = grecaptcha.getResponse();
+  const name    = contactForm.name.value.trim();
+  const email   = contactForm.email.value.trim();
+  const message = contactForm.message.value.trim();
 
   if (!name || !email || !message) {
     formStatus.textContent = 'Please fill in all fields.';
@@ -423,11 +422,13 @@ contactForm.addEventListener('submit', async (e) => {
     return;
   }
 
-  if (!recaptchaToken) {
-    formStatus.textContent = 'Please complete the reCAPTCHA.';
-    formStatus.className = 'form-status error';
-    return;
-  }
+  showCaptcha('Verify to send your message', submitContact);
+});
+
+async function submitContact(recaptchaToken) {
+  const name    = contactForm.name.value.trim();
+  const email   = contactForm.email.value.trim();
+  const message = contactForm.message.value.trim();
 
   submitBtn.disabled = true;
   submitText.textContent = 'Sending…';
@@ -448,18 +449,40 @@ contactForm.addEventListener('submit', async (e) => {
     } else {
       formStatus.textContent = data.error || 'Something went wrong. Please try again.';
       formStatus.className = 'form-status error';
-      grecaptcha.reset();
     }
   } catch {
     formStatus.textContent = 'Network error. Please try again.';
     formStatus.className = 'form-status error';
-    grecaptcha.reset();
   } finally {
     submitBtn.disabled = false;
     submitText.textContent = 'Send Message';
     submitIcon.className = 'fa-solid fa-paper-plane';
   }
-});
+}
+
+// ──────────────────────────────────────────────────────────────
+// Shared reCAPTCHA Flyout
+// ──────────────────────────────────────────────────────────────
+let captchaWidgetId = null;
+let captchaCallback = null;
+
+function showCaptcha(title, callback) {
+  captchaCallback = callback;
+  document.getElementById('captchaTitle').textContent = title;
+  if (captchaWidgetId !== null) grecaptcha.reset(captchaWidgetId);
+  document.getElementById('captchaFlyout').hidden = false;
+}
+
+function hideCaptcha() {
+  document.getElementById('captchaFlyout').hidden = true;
+  captchaCallback = null;
+}
+
+function onCaptchaVerified(token) {
+  const cb = captchaCallback;
+  hideCaptcha();
+  if (cb) cb(token);
+}
 
 // ──────────────────────────────────────────────────────────────
 // Downloads Section
@@ -528,6 +551,10 @@ async function loadDownloads() {
   buildUploadCard();
 }
 
+// Module-level refs so the captcha callback can reach the upload card
+let uploadCard, uploadInput, uploadStatus;
+let pendingUploadToken = null;
+
 function buildUploadCard() {
   const card = document.createElement('div');
   card.className = 'upload-card';
@@ -537,88 +564,87 @@ function buildUploadCard() {
       <div class="upload-card-name">Send me a file</div>
       <div class="upload-card-status" id="uploadStatus">Click to select a file</div>
     </div>
-    <button class="upload-send-btn" id="uploadSendBtn" type="button" title="Upload" disabled>
-      <i class="fa-solid fa-cloud-arrow-up"></i>
-    </button>
     <input type="file" id="uploadInput" style="display:none" />
   `;
   downloadsGrid.appendChild(card);
 
-  const input  = card.querySelector('#uploadInput');
-  const status = card.querySelector('#uploadStatus');
-  const btn    = card.querySelector('#uploadSendBtn');
+  uploadCard   = card;
+  uploadInput  = card.querySelector('#uploadInput');
+  uploadStatus = card.querySelector('#uploadStatus');
 
-  // Click card body → open file picker (unless clicking the send button)
-  card.addEventListener('click', (e) => {
-    if (!e.target.closest('#uploadSendBtn') && !card.classList.contains('upload-uploading')) {
-      input.click();
+  // Click card → reCAPTCHA flyout first (unless already uploading)
+  card.addEventListener('click', () => {
+    if (!uploadCard.classList.contains('upload-uploading')) {
+      showCaptcha('Verify to send your file', (token) => {
+        pendingUploadToken = token;
+        uploadInput.value  = '';
+        uploadInput.click();
+      });
     }
   });
 
-  input.addEventListener('change', () => {
-    const file = input.files[0];
-    if (file) {
-      status.textContent = `${file.name} (${formatBytes(file.size)})`;
-      btn.disabled = false;
-      card.classList.remove('upload-success', 'upload-error');
+  // After captcha passes, file picker opens; selecting a file auto-uploads
+  uploadInput.addEventListener('change', () => {
+    const file = uploadInput.files[0];
+    if (!file || !pendingUploadToken) return;
+    uploadStatus.textContent = `${file.name} (${formatBytes(file.size)})`;
+    uploadCard.classList.remove('upload-success', 'upload-error');
+    performUpload(pendingUploadToken);
+    pendingUploadToken = null;
+  });
+
+}
+
+function performUpload(token) {
+  const file = uploadInput.files[0];
+  if (!file) return;
+
+  uploadCard.classList.add('upload-uploading');
+  uploadCard.classList.remove('upload-success', 'upload-error');
+  uploadStatus.textContent = 'Uploading...';
+
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('recaptchaToken', token);
+
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', '/api/upload');
+
+  xhr.upload.addEventListener('progress', (ev) => {
+    if (ev.lengthComputable) {
+      const pct = Math.round((ev.loaded / ev.total) * 100);
+      uploadStatus.textContent = `Uploading… ${pct}%`;
     }
   });
 
-  btn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const file = input.files[0];
-    if (!file) return;
+  xhr.addEventListener('load', () => {
+    uploadCard.classList.remove('upload-uploading');
+    let data = {};
+    try { data = JSON.parse(xhr.responseText); } catch { /* ignore */ }
 
-    card.classList.add('upload-uploading');
-    card.classList.remove('upload-success', 'upload-error');
-    btn.disabled = true;
-    status.textContent = 'Uploading...';
-
-    const formData = new FormData();
-    formData.append('file', file);
-
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', '/api/upload');
-
-    xhr.upload.addEventListener('progress', (ev) => {
-      if (ev.lengthComputable) {
-        const pct = Math.round((ev.loaded / ev.total) * 100);
-        status.textContent = `Uploading… ${pct}%`;
-      }
-    });
-
-    xhr.addEventListener('load', () => {
-      card.classList.remove('upload-uploading');
-      let data = {};
-      try { data = JSON.parse(xhr.responseText); } catch { /* ignore */ }
-
-      if (xhr.status >= 200 && xhr.status < 300) {
-        card.classList.add('upload-success');
-        status.textContent = 'Sent!';
-        setTimeout(() => {
-          input.value = '';
-          status.textContent = 'Click to select a file';
-          btn.disabled = true;
-          card.classList.remove('upload-success');
-        }, 3000);
-      } else {
-        card.classList.add('upload-error');
-        status.textContent = data.error || 'Upload failed';
-        btn.disabled = false;
-        setTimeout(() => card.classList.remove('upload-error'), 4000);
-      }
-    });
-
-    xhr.addEventListener('error', () => {
-      card.classList.remove('upload-uploading');
-      card.classList.add('upload-error');
-      status.textContent = 'Upload failed';
-      btn.disabled = false;
-      setTimeout(() => card.classList.remove('upload-error'), 4000);
-    });
-
-    xhr.send(formData);
+    if (xhr.status >= 200 && xhr.status < 300) {
+      uploadCard.classList.add('upload-success');
+      uploadStatus.textContent = 'Sent!';
+      setTimeout(() => {
+        uploadInput.value = '';
+        uploadStatus.textContent = 'Click to select a file';
+        uploadCard.classList.remove('upload-success');
+      }, 3000);
+    } else {
+      uploadCard.classList.add('upload-error');
+      uploadStatus.textContent = data.error || 'Upload failed';
+      setTimeout(() => uploadCard.classList.remove('upload-error'), 4000);
+    }
   });
+
+  xhr.addEventListener('error', () => {
+    uploadCard.classList.remove('upload-uploading');
+    uploadCard.classList.add('upload-error');
+    uploadStatus.textContent = 'Upload failed';
+    setTimeout(() => uploadCard.classList.remove('upload-error'), 4000);
+  });
+
+  xhr.send(formData);
 }
 
 // ──────────────────────────────────────────────────────────────
@@ -633,3 +659,11 @@ buildTracklist();
 selectTrack(0, false); // Load first track without autoplaying
 updateVolumeIcon(parseFloat(volumeSlider.value));
 loadDownloads();
+
+document.getElementById('captchaCancel').addEventListener('click', hideCaptcha);
+grecaptcha.ready(() => {
+  captchaWidgetId = grecaptcha.render('captchaWidget', {
+    sitekey: '6Lc-UJAsAAAAABymD0YmXWKkuQVswzcOl0Iiwlxe',
+    callback: onCaptchaVerified,
+  });
+});

@@ -252,7 +252,6 @@
             <label for="message">Message</label>
             <textarea id="message" name="message" placeholder="What's on your mind?" rows="6" required></textarea>
           </div>
-          <div class="g-recaptcha" data-sitekey="6Lc-UJAsAAAAABymD0YmXWKkuQVswzcOl0Iiwlxe"></div>
           <div class="form-status" id="formStatus" aria-live="polite"></div>
           <button type="submit" class="submit-btn" id="submitBtn">
             <span id="submitText">Send Message</span>
@@ -263,6 +262,15 @@
     </section>
 
   </main>
+
+  <!-- Upload reCAPTCHA Flyout -->
+  <div id="captchaFlyout" class="upload-captcha-flyout" hidden>
+    <div class="upload-captcha-panel">
+      <p class="upload-captcha-title" id="captchaTitle"></p>
+      <div id="captchaWidget"></div>
+      <button id="captchaCancel" class="upload-captcha-cancel">Cancel</button>
+    </div>
+  </div>
 
   <footer class="footer">
     <div class="footer-inner">

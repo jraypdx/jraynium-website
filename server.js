@@ -210,6 +210,23 @@ app.post('/api/upload', checkUploadQuota, (req, res, next) => {
 }, async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file received.' });
 
+  // Verify reCAPTCHA before accepting the file
+  const recaptchaToken = req.body.recaptchaToken;
+  if (!recaptchaToken) {
+    fs.unlinkSync(req.file.path);
+    return res.status(400).json({ error: 'reCAPTCHA token missing.' });
+  }
+  try {
+    const captchaResult = await verifyRecaptcha(recaptchaToken);
+    if (!captchaResult.success) {
+      fs.unlinkSync(req.file.path);
+      return res.status(400).json({ error: 'reCAPTCHA verification failed. Please try again.' });
+    }
+  } catch {
+    fs.unlinkSync(req.file.path);
+    return res.status(500).json({ error: 'Could not verify reCAPTCHA. Please try again.' });
+  }
+
   // Update per-IP usage with actual bytes
   const ip = req.ip;
   const usage = getIpUsage(ip);
