@@ -55,6 +55,50 @@ function formatBytes(bytes) {
   return `${(bytes / Math.pow(1024, i)).toFixed(i === 0 ? 0 : 1)} ${units[i]}`;
 }
 
+// ── Download tracking ─────────────────────────────────────────
+const STATS_PATH = path.join(__dirname, 'download-stats.json');
+
+function readStats() {
+  if (!fs.existsSync(STATS_PATH)) return {};
+  try { return JSON.parse(fs.readFileSync(STATS_PATH, 'utf8')); }
+  catch { return {}; }
+}
+
+function getGeoData(ip) {
+  const clean = ip.replace(/^::ffff:/, '');
+  // Skip lookup for local / private addresses
+  if (/^(127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|::1$)/.test(clean) || clean === 'localhost') {
+    return Promise.resolve({ city: 'Local', country: 'Local' });
+  }
+  return new Promise((resolve) => {
+    const req = https.request(
+      { hostname: 'ipapi.co', path: `/${clean}/json/`, headers: { 'User-Agent': 'jraynium-site/1.0' } },
+      (res) => {
+        let body = '';
+        res.on('data', chunk => body += chunk);
+        res.on('end', () => {
+          try {
+            const d = JSON.parse(body);
+            resolve({ city: d.city || 'Unknown', country: d.country_name || 'Unknown' });
+          } catch { resolve({ city: 'Unknown', country: 'Unknown' }); }
+        });
+      }
+    );
+    req.on('error', () => resolve({ city: 'Unknown', country: 'Unknown' }));
+    req.end();
+  });
+}
+
+async function recordDownload(fileKey, rawIp) {
+  const ip  = rawIp.replace(/^::ffff:/, '');
+  const geo = await getGeoData(rawIp);
+  const stats = readStats();
+  if (!stats[fileKey]) stats[fileKey] = { total: 0, downloads: [] };
+  stats[fileKey].total += 1;
+  stats[fileKey].downloads.push({ timestamp: new Date().toISOString(), ip, city: geo.city, country: geo.country });
+  fs.writeFileSync(STATS_PATH, JSON.stringify(stats, null, 2));
+}
+
 // Rate limiter for contact form
 const contactLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -71,6 +115,7 @@ app.get('/api/download/music/:filename', (req, res) => {
     return res.status(404).json({ error: 'File not found' });
   }
 
+  recordDownload(`music/${filename}`, req.ip).catch(err => console.error('Download tracking error:', err));
   res.download(filePath, filename);
 });
 
@@ -99,6 +144,7 @@ app.get('/api/download/:filename', (req, res) => {
     return res.status(404).json({ error: 'File not found' });
   }
 
+  recordDownload(`downloads/${filename}`, req.ip).catch(err => console.error('Download tracking error:', err));
   res.download(filePath, filename);
 });
 
