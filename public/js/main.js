@@ -474,7 +474,7 @@ async function submitContact(recaptchaToken, captchaVersion) {
 // ──────────────────────────────────────────────────────────────
 // Shared reCAPTCHA (v3 silent + v2 flyout fallback)
 // ──────────────────────────────────────────────────────────────
-const V3_SITE_KEY = 'YOUR_V3_SITE_KEY_HERE';
+const V3_SITE_KEY = '6LfeipAsAAAAADx56AzxyfHTd4Y8InNyqMTGpz8Z';
 const V2_SITE_KEY = '6Lc-UJAsAAAAABymD0YmXWKkuQVswzcOl0Iiwlxe';
 
 function executeV3(action) {
@@ -596,7 +596,8 @@ function buildUploadCard() {
   uploadStatus = card.querySelector('#uploadStatus');
 
   // Click card → execute v3 silently; fallback to v2 flyout if score is low
-  card.addEventListener('click', async () => {
+  card.addEventListener('click', async (e) => {
+    if (e.target === uploadInput) return;
     if (uploadCard.classList.contains('upload-uploading')) return;
     try {
       const token = await executeV3('upload');
