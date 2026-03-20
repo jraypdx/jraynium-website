@@ -24,6 +24,9 @@
   --transition:    0.25s ease;
 }
 
+/* - Hide reCAPTCHA persistent banner thing - */
+.grecaptcha-badge { visibility: hidden !important }
+
 /* ── Custom Fonts ── */
 @font-face {
   font-family: 'EnterTheGrid2';
