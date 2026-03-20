@@ -407,7 +407,7 @@ const submitBtn   = document.getElementById('submitBtn');
 const submitText  = document.getElementById('submitText');
 const submitIcon  = document.getElementById('submitIcon');
 
-contactForm.addEventListener('submit', (e) => {
+contactForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   formStatus.textContent = '';
   formStatus.className = 'form-status';
@@ -422,10 +422,16 @@ contactForm.addEventListener('submit', (e) => {
     return;
   }
 
-  showCaptcha('Verify to send your message', submitContact);
+  try {
+    const token = await executeV3('contact');
+    submitContact(token, 'v3');
+  } catch {
+    formStatus.textContent = 'Verification error. Please try again.';
+    formStatus.className = 'form-status error';
+  }
 });
 
-async function submitContact(recaptchaToken) {
+async function submitContact(recaptchaToken, captchaVersion) {
   const name    = contactForm.name.value.trim();
   const email   = contactForm.email.value.trim();
   const message = contactForm.message.value.trim();
@@ -438,9 +444,14 @@ async function submitContact(recaptchaToken) {
     const res = await fetch('/api/contact', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, message, recaptchaToken }),
+      body: JSON.stringify({ name, email, message, recaptchaToken, captchaVersion }),
     });
     const data = await res.json();
+
+    if (data.requireFallback) {
+      showCaptcha('Please verify you\'re human', (v2Token) => submitContact(v2Token, 'v2'));
+      return;
+    }
 
     if (res.ok && data.success) {
       formStatus.textContent = 'Message sent! I\'ll get back to you soon.';
@@ -461,8 +472,19 @@ async function submitContact(recaptchaToken) {
 }
 
 // ──────────────────────────────────────────────────────────────
-// Shared reCAPTCHA Flyout
+// Shared reCAPTCHA (v3 silent + v2 flyout fallback)
 // ──────────────────────────────────────────────────────────────
+const V3_SITE_KEY = 'YOUR_V3_SITE_KEY_HERE';
+const V2_SITE_KEY = '6Lc-UJAsAAAAABymD0YmXWKkuQVswzcOl0Iiwlxe';
+
+function executeV3(action) {
+  return new Promise((resolve, reject) => {
+    grecaptcha.ready(() => {
+      grecaptcha.execute(V3_SITE_KEY, { action }).then(resolve).catch(reject);
+    });
+  });
+}
+
 let captchaWidgetId = null;
 let captchaCallback = null;
 
@@ -553,7 +575,8 @@ async function loadDownloads() {
 
 // Module-level refs so the captcha callback can reach the upload card
 let uploadCard, uploadInput, uploadStatus;
-let pendingUploadToken = null;
+let pendingUploadToken   = null;
+let pendingTokenVersion  = null;
 
 function buildUploadCard() {
   const card = document.createElement('div');
@@ -572,30 +595,39 @@ function buildUploadCard() {
   uploadInput  = card.querySelector('#uploadInput');
   uploadStatus = card.querySelector('#uploadStatus');
 
-  // Click card → reCAPTCHA flyout first (unless already uploading)
-  card.addEventListener('click', () => {
-    if (!uploadCard.classList.contains('upload-uploading')) {
-      showCaptcha('Verify to send your file', (token) => {
-        pendingUploadToken = token;
-        uploadInput.value  = '';
-        uploadInput.click();
-      });
+  // Click card → execute v3 silently; fallback to v2 flyout if score is low
+  card.addEventListener('click', async () => {
+    if (uploadCard.classList.contains('upload-uploading')) return;
+    try {
+      const token = await executeV3('upload');
+      pendingUploadToken  = token;
+      pendingTokenVersion = 'v3';
+      uploadInput.value   = '';
+      uploadInput.click();
+    } catch {
+      uploadStatus.textContent = 'Verification error. Try again.';
+      uploadCard.classList.add('upload-error');
+      setTimeout(() => {
+        uploadCard.classList.remove('upload-error');
+        uploadStatus.textContent = 'Click to select a file';
+      }, 3000);
     }
   });
 
-  // After captcha passes, file picker opens; selecting a file auto-uploads
+  // After verification passes, file picker opens; selecting a file auto-uploads
   uploadInput.addEventListener('change', () => {
     const file = uploadInput.files[0];
     if (!file || !pendingUploadToken) return;
     uploadStatus.textContent = `${file.name} (${formatBytes(file.size)})`;
     uploadCard.classList.remove('upload-success', 'upload-error');
-    performUpload(pendingUploadToken);
-    pendingUploadToken = null;
+    performUpload(pendingUploadToken, pendingTokenVersion);
+    pendingUploadToken  = null;
+    pendingTokenVersion = null;
   });
 
 }
 
-function performUpload(token) {
+function performUpload(token, captchaVersion) {
   const file = uploadInput.files[0];
   if (!file) return;
 
@@ -606,6 +638,7 @@ function performUpload(token) {
   const formData = new FormData();
   formData.append('file', file);
   formData.append('recaptchaToken', token);
+  formData.append('captchaVersion', captchaVersion);
 
   const xhr = new XMLHttpRequest();
   xhr.open('POST', '/api/upload');
@@ -621,6 +654,17 @@ function performUpload(token) {
     uploadCard.classList.remove('upload-uploading');
     let data = {};
     try { data = JSON.parse(xhr.responseText); } catch { /* ignore */ }
+
+    if (data.requireFallback) {
+      uploadStatus.textContent = 'Click to select a file';
+      showCaptcha('Please verify you\'re human', (v2Token) => {
+        pendingUploadToken  = v2Token;
+        pendingTokenVersion = 'v2';
+        uploadInput.value   = '';
+        uploadInput.click();
+      });
+      return;
+    }
 
     if (xhr.status >= 200 && xhr.status < 300) {
       uploadCard.classList.add('upload-success');
@@ -663,7 +707,7 @@ loadDownloads();
 document.getElementById('captchaCancel').addEventListener('click', hideCaptcha);
 grecaptcha.ready(() => {
   captchaWidgetId = grecaptcha.render('captchaWidget', {
-    sitekey: '6Lc-UJAsAAAAABymD0YmXWKkuQVswzcOl0Iiwlxe',
+    sitekey: V2_SITE_KEY,
     callback: onCaptchaVerified,
   });
 });

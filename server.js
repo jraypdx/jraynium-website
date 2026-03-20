@@ -148,9 +148,8 @@ app.get('/api/download/:filename', (req, res) => {
   res.download(filePath, filename);
 });
 
-function verifyRecaptcha(token) {
+function verifyRecaptchaToken(token, secret) {
   return new Promise((resolve, reject) => {
-    const secret = process.env.RECAPTCHA_SECRET_KEY;
     const postData = `secret=${encodeURIComponent(secret)}&response=${encodeURIComponent(token)}`;
     const options = {
       hostname: 'www.google.com',
@@ -177,7 +176,7 @@ function verifyRecaptcha(token) {
 
 // Contact form
 app.post('/api/contact', contactLimiter, async (req, res) => {
-  const { name, email, message, recaptchaToken } = req.body;
+  const { name, email, message, recaptchaToken, captchaVersion } = req.body;
 
   if (!name || !email || !message) {
     return res.status(400).json({ error: 'All fields are required.' });
@@ -188,9 +187,16 @@ app.post('/api/contact', contactLimiter, async (req, res) => {
   }
 
   try {
-    const captchaResult = await verifyRecaptcha(recaptchaToken);
-    if (!captchaResult.success) {
-      return res.status(400).json({ error: 'reCAPTCHA verification failed. Please try again.' });
+    if (captchaVersion === 'v2') {
+      const result = await verifyRecaptchaToken(recaptchaToken, process.env.RECAPTCHA_SECRET_KEY);
+      if (!result.success) {
+        return res.status(400).json({ error: 'reCAPTCHA verification failed. Please try again.' });
+      }
+    } else {
+      const result = await verifyRecaptchaToken(recaptchaToken, process.env.RECAPTCHA_V3_SECRET_KEY);
+      if (!result.success || result.score < 0.5) {
+        return res.json({ requireFallback: true });
+      }
     }
   } catch {
     return res.status(500).json({ error: 'Could not verify reCAPTCHA. Please try again.' });
@@ -258,15 +264,24 @@ app.post('/api/upload', checkUploadQuota, (req, res, next) => {
 
   // Verify reCAPTCHA before accepting the file
   const recaptchaToken = req.body.recaptchaToken;
+  const captchaVersion = req.body.captchaVersion;
   if (!recaptchaToken) {
     fs.unlinkSync(req.file.path);
     return res.status(400).json({ error: 'reCAPTCHA token missing.' });
   }
   try {
-    const captchaResult = await verifyRecaptcha(recaptchaToken);
-    if (!captchaResult.success) {
-      fs.unlinkSync(req.file.path);
-      return res.status(400).json({ error: 'reCAPTCHA verification failed. Please try again.' });
+    if (captchaVersion === 'v2') {
+      const result = await verifyRecaptchaToken(recaptchaToken, process.env.RECAPTCHA_SECRET_KEY);
+      if (!result.success) {
+        fs.unlinkSync(req.file.path);
+        return res.status(400).json({ error: 'reCAPTCHA verification failed. Please try again.' });
+      }
+    } else {
+      const result = await verifyRecaptchaToken(recaptchaToken, process.env.RECAPTCHA_V3_SECRET_KEY);
+      if (!result.success || result.score < 0.5) {
+        fs.unlinkSync(req.file.path);
+        return res.json({ requireFallback: true });
+      }
     }
   } catch {
     fs.unlinkSync(req.file.path);
