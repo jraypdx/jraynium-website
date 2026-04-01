@@ -336,6 +336,154 @@ ul { list-style: none; }
 }
 
 /* ============================================================
+   NEWEST RELEASE CARD
+   ============================================================ */
+.release-card {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  margin-top: 2rem;
+}
+
+.release-art-wrap {
+  flex-shrink: 0;
+  width: 240px;
+  height: 240px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--bg4);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+}
+
+.release-art {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.release-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.release-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent-light);
+}
+
+.release-title {
+  font-family: 'EnterTheGrid2', 'Space Grotesk', sans-serif;
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.1;
+  color: var(--text);
+}
+
+.release-meta {
+  font-size: 0.85rem;
+  color: var(--text2);
+  margin-bottom: 0.75rem;
+}
+
+.release-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.release-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.25rem;
+  border-radius: var(--radius);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  border: 1px solid transparent;
+  transition: background var(--transition), color var(--transition), border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+}
+.release-btn:hover { transform: translateY(-2px); }
+
+.release-btn-spotify {
+  background: rgba(29, 185, 84, 0.12);
+  border-color: rgba(29, 185, 84, 0.3);
+  color: #1DB954;
+}
+.release-btn-spotify:hover {
+  background: #1DB954;
+  border-color: #1DB954;
+  color: #fff;
+  box-shadow: 0 0 20px rgba(29, 185, 84, 0.35);
+}
+
+.release-btn-soundcloud {
+  background: rgba(255, 85, 0, 0.12);
+  border-color: rgba(255, 85, 0, 0.3);
+  color: #FF5500;
+}
+.release-btn-soundcloud:hover {
+  background: #FF5500;
+  border-color: #FF5500;
+  color: #fff;
+  box-shadow: 0 0 20px rgba(255, 85, 0, 0.35);
+}
+
+.release-btn-youtube {
+  background: rgba(255, 0, 0, 0.1);
+  border-color: rgba(255, 0, 0, 0.25);
+  color: #ff4444;
+}
+.release-btn-youtube:hover {
+  background: #FF0000;
+  border-color: #FF0000;
+  color: #fff;
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.35);
+}
+
+.release-btn-apple {
+  background: rgba(250, 36, 60, 0.1);
+  border-color: rgba(250, 36, 60, 0.25);
+  color: #FA243C;
+}
+.release-btn-apple:hover {
+  background: #FA243C;
+  border-color: #FA243C;
+  color: #fff;
+  box-shadow: 0 0 20px rgba(250, 36, 60, 0.35);
+}
+
+@media (max-width: 640px) {
+  .release-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.5rem;
+    gap: 1.5rem;
+  }
+  .release-art-wrap {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+}
+
+/* ============================================================
    SOCIAL GRID
    ============================================================ */
 .social-grid {
