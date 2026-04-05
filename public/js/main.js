@@ -412,9 +412,15 @@ contactForm.addEventListener('submit', async (e) => {
   formStatus.textContent = '';
   formStatus.className = 'form-status';
 
-  const name    = contactForm.name.value.trim();
-  const email   = contactForm.email.value.trim();
-  const message = contactForm.message.value.trim();
+  const name      = contactForm.name.value.trim();
+  const email     = contactForm.email.value.trim();
+  const message   = contactForm.message.value.trim();
+  const lastField = document.getElementById('LastField').value;
+
+  if (lastField) {
+    location.reload();
+    return;
+  }
 
   if (!name || !email || !message) {
     formStatus.textContent = 'Please fill in all fields.';
