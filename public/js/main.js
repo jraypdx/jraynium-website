@@ -8,6 +8,11 @@
 // ──────────────────────────────────────────────────────────────
 const songs = [
   {
+    title: 'The Great Escape (Jraynium Bootleg)',
+    file: '/music/Boys Like Girls - The Great Escape (Jraynium Bootleg)',
+    cover: '/assets/covers/GreatEscapeRmxCover.jpg', // e.g. '/assets/covers/love-u-anyway.jpg'
+  },
+  {
     title: 'Feel Your Love',
     file: '/music/Jraynium - Feel Your Love.mp3',
     cover: '/assets/covers/FYL_CoverArt_1024_lighterLogo.jpg', // e.g. '/assets/covers/love-u-anyway.jpg'
