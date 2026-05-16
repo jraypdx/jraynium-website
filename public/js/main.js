@@ -8,8 +8,8 @@
 // ──────────────────────────────────────────────────────────────
 const songs = [
   {
-    title: 'The Great Escape (Jraynium Bootleg)',
-    file: '/music/Boys Like Girls - The Great Escape (Jraynium Bootleg)',
+    title: 'Boys Like Girls - The Great Escape (Jraynium Bootleg).mp3',
+    file: '/music/Boys Like Girls - The Great Escape (Jraynium Bootleg).mp3',
     cover: '/assets/covers/GreatEscapeRmxCover.jpg', // e.g. '/assets/covers/love-u-anyway.jpg'
   },
   {
@@ -581,7 +581,7 @@ async function loadDownloads() {
     downloadsEmpty.hidden = false;
   }
 
-  buildUploadCard();
+  //buildUploadCard();
 }
 
 // Module-level refs so the captcha callback can reach the upload card
