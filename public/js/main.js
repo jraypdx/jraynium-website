@@ -8,6 +8,11 @@
 // ──────────────────────────────────────────────────────────────
 const songs = [
   {
+    title: 'Nero - Promises (Jraynium Bootleg).mp3',
+    file: '/music/Nero - Promises (Jraynium Bootleg).mp3',
+    cover: '/assets/covers/NeroPromisesJrayniumCover.jpg', // e.g. '/assets/covers/love-u-anyway.jpg'
+  },
+  {
     title: 'Boys Like Girls - The Great Escape (Jraynium Bootleg).mp3',
     file: '/music/Boys Like Girls - The Great Escape (Jraynium Bootleg).mp3',
     cover: '/assets/covers/GreatEscapeRmxCover.jpg', // e.g. '/assets/covers/love-u-anyway.jpg'
