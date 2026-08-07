@@ -13,6 +13,11 @@ const songs = [
     cover: '/assets/covers/WhoIAmCover.jpg', // e.g. '/assets/covers/love-u-anyway.jpg'
   },
   {
+    title: 'Avello x NoMe - Believe (Jraynium Remix)',
+    file: '/music/Avello x NoMe - Believe (Jraynium Remix).mp3',
+    cover: '/assets/covers/AvelloCover.jpg',
+  },
+  {
     title: 'Nero - Promises (Jraynium Bootleg)',
     file: '/music/Nero - Promises (Jraynium Bootleg).mp3',
     cover: '/assets/covers/NeroPromisesJrayniumCover.jpg', // e.g. '/assets/covers/love-u-anyway.jpg'
